@@ -11,6 +11,11 @@ import { clonePreset, presets } from "@/lib/waterfall/presets";
 import { money } from "@/lib/waterfall/format";
 import type { Scenario } from "@/lib/waterfall/types";
 import type { SaveResult } from "@/lib/scenarios";
+import {
+  scenarioToSimple,
+  simpleToScenario,
+  type SimpleInputs,
+} from "@/lib/waterfall/simple";
 
 import { CapTableEditor } from "./cap-table-editor";
 import { Distribution } from "./distribution";
@@ -18,6 +23,7 @@ import { ExitChart } from "./exit-chart";
 import { GrantEditor, TaxEditor } from "./grant-editor";
 import { Lede } from "./lede";
 import { ShareButton } from "./share-button";
+import { SimpleCalculator } from "./simple-calculator";
 import { ThemeToggle } from "./theme";
 import { CardMeta, NumberInput, Section, Slider } from "./ui/controls";
 import { YourMath } from "./your-math";
@@ -32,6 +38,7 @@ const fromSlider = (pos: number, max: number) => (pos / SLIDER_STEPS) ** 2 * max
 export function WaterlineApp({
   initialScenario,
   saveAction,
+  startsDetailed = false,
 }: {
   initialScenario: Scenario;
   /**
@@ -40,9 +47,41 @@ export function WaterlineApp({
    * everything else still works.
    */
   saveAction?: (scenario: Scenario) => Promise<SaveResult>;
+  /** Shared links open on the full model — somebody built that cap table on purpose. */
+  startsDetailed?: boolean;
 }) {
   const [scenario, setScenario] = useState<Scenario>(initialScenario);
   const [exitValue, setExitValue] = useState(() => openingExit(initialScenario));
+
+  /**
+   * Simple mode asks five questions and gives one answer. Detailed mode is the
+   * whole model. Opening in detailed mode buries the point under sixty inputs,
+   * so we start simple and let people ask for more — except on a shared link,
+   * where somebody deliberately built a cap table worth showing.
+   */
+  const [detailed, setDetailed] = useState(startsDetailed);
+  const [simple, setSimple] = useState<SimpleInputs>(() =>
+    scenarioToSimple(initialScenario),
+  );
+
+  const enterDetailed = () => {
+    setScenario((s) => simpleToScenario(simple, s));
+    setDetailed(true);
+  };
+
+  const leaveDetailed = () => {
+    setSimple(scenarioToSimple(scenario));
+    setDetailed(false);
+  };
+
+  const onSimpleInputs = (next: SimpleInputs) => {
+    setSimple(next);
+    setScenario((s) => {
+      const updated = simpleToScenario(next, s);
+      setExitValue((e) => Math.min(e, updated.maxExit));
+      return updated;
+    });
+  };
 
   const verdict = useMemo(() => computeVerdict(scenario), [scenario]);
 
@@ -69,7 +108,11 @@ export function WaterlineApp({
   const loadPreset = useCallback((id: string) => {
     const next = clonePreset(id);
     setScenario(next);
+    setSimple(scenarioToSimple(next));
     setExitValue(openingExit(next));
+    // The examples exist to show what structure does, which only the full
+    // model can express.
+    setDetailed(true);
   }, []);
 
   const setMaxExit = (maxExit: number) => {
@@ -87,6 +130,16 @@ export function WaterlineApp({
       />
 
       <main className="mx-auto w-full max-w-[1180px] px-5 pb-24 pt-10 sm:px-8 sm:pt-14">
+        {detailed ? (
+          <>
+            <button
+              type="button"
+              onClick={leaveDetailed}
+              className="mb-10 border-b border-line pb-0.5 text-[13.5px] text-fg-muted transition-colors hover:border-fg hover:text-fg"
+            >
+              ← Back to the simple calculator
+            </button>
+
         <Lede
           scenario={scenario}
           verdict={verdict}
@@ -198,6 +251,18 @@ export function WaterlineApp({
           </aside>
         </div>
 
+          </>
+        ) : (
+          <SimpleCalculator
+            inputs={simple}
+            base={scenario}
+            exitValue={exitValue}
+            onInputs={onSimpleInputs}
+            onExitValue={setExitValue}
+            onExpand={enterDetailed}
+          />
+        )}
+
         <Colophon />
       </main>
     </div>
@@ -224,17 +289,15 @@ function Masthead({
         </div>
 
         <div className="flex items-center gap-4">
-          <nav className="flex flex-wrap items-center gap-x-4 gap-y-1">
-            <span className="hidden text-[13px] text-fg-subtle md:inline">
-              Examples
-            </span>
+          <nav className="hidden flex-wrap items-center gap-x-3 gap-y-1 sm:flex">
+            <span className="text-[12px] text-fg-subtle">Examples</span>
             {presets.map((p) => (
               <button
                 key={p.id}
                 type="button"
                 onClick={() => onPick(p.id)}
                 title={p.blurb}
-                className="border-b border-transparent pb-0.5 text-[13px] text-fg-muted transition-colors hover:border-fg hover:text-fg"
+                className="border-b border-transparent pb-px text-[12px] text-fg-subtle transition-colors hover:border-fg-muted hover:text-fg-muted"
               >
                 {p.label}
               </button>
