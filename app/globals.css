@@ -1,9 +1,11 @@
 @import "tailwindcss";
 
 /*
-  Design system: white cards on a light grey page, generous spacing, one blue
-  accent for interface chrome, and green/red/amber reserved strictly for what
-  the numbers mean. Nothing smaller than 12px.
+  Waterline is set like a printed feature, not a dashboard: warm paper, a
+  brown-black ink, a high-contrast serif for the numbers that matter, and rules
+  instead of boxes wherever a box is not load-bearing. Deep sea blue carries the
+  "water" idea; green, red and ochre are reserved strictly for what the numbers
+  mean.
 
   Every colour is a CSS variable mapped into Tailwind via `@theme inline`, so
   flipping `data-theme` on <html> re-themes everything — including the SVG
@@ -13,91 +15,96 @@
 :root {
   color-scheme: light;
 
-  --page: #f6f7f9;
-  --card: #ffffff;
-  --muted: #f4f5f7;
-  --line: #e6e8ec;
-  --line-strong: #d3d7dd;
+  /* Warm paper, not grey chrome. Ink is brown-black, never pure #000. */
+  --page: #f7f2e9;
+  --page-deep: #efe7d9;
+  --card: #fffdf9;
+  --muted: #f2ebdf;
+  --line: #ded3c0;
+  --line-strong: #c3b49b;
+  --rule: #1c1714;
 
-  --fg: #111826;
-  --fg-muted: #56606f;
-  --fg-subtle: #8b95a3;
+  --fg: #1c1714;
+  --fg-muted: #5d5147;
+  --fg-subtle: #8c7d6d;
 
-  --accent: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-soft: #eef4ff;
-  --accent-ring: rgba(37, 99, 235, 0.16);
+  /* Deep sea. The water in "waterline". */
+  --accent: #0e4b5c;
+  --accent-hover: #0a3745;
+  --accent-soft: #e2eef1;
+  --accent-ring: rgba(14, 75, 92, 0.2);
 
-  --pos: #047d5f;
-  --pos-soft: #e9f7f2;
-  --neg: #d02b3f;
-  --neg-soft: #fdeef0;
-  --warn: #b45309;
-  --warn-soft: #fdf5e9;
+  --pos: #1a6b46;
+  --pos-soft: #e6f1ea;
+  --neg: #b23a25;
+  --neg-soft: #fbeae5;
+  --warn: #9a6712;
+  --warn-soft: #f9f0dd;
 
-  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06);
-  --shadow-md: 0 2px 4px rgba(16, 24, 40, 0.04), 0 8px 20px rgba(16, 24, 40, 0.07);
+  --shadow-sm: none;
+  --shadow-md: 0 12px 32px rgba(28, 23, 20, 0.09);
 
   /* Chart. */
-  --water-top: rgba(125, 165, 200, 0.1);
-  --water-bottom: rgba(96, 137, 175, 0.22);
-  --curve-top: rgba(4, 125, 95, 0.2);
-  --curve-bottom: rgba(4, 125, 95, 0.015);
-  --grid: #e6e8ec;
-  --plot-dot: #ffffff;
+  --water-top: rgba(14, 75, 92, 0.07);
+  --water-bottom: rgba(14, 75, 92, 0.2);
+  --curve-top: rgba(26, 107, 70, 0.24);
+  --curve-bottom: rgba(26, 107, 70, 0.02);
+  --grid: #e3d9c8;
+  --plot-dot: #fffdf9;
 
-  /* Distribution bar: preferred recedes, common and you come forward. */
-  --series-1: #64748b;
-  --series-2: #7c8798;
-  --series-3: #94a1b2;
-  --series-4: #aab6c6;
-  --series-5: #c0cad7;
-  --series-6: #d5dce6;
-  --on-series: rgba(255, 255, 255, 0.95);
+  --series-1: #0e4b5c;
+  --series-2: #2c6675;
+  --series-3: #4a818e;
+  --series-4: #6a9ca6;
+  --series-5: #8db6be;
+  --series-6: #b1d0d5;
+  --on-series: rgba(255, 253, 249, 0.96);
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
 
-  --page: #0a0c11;
-  --card: #13161d;
-  --muted: #1a1e27;
-  --line: #242935;
-  --line-strong: #333a49;
+  --page: #14120f;
+  --page-deep: #0e0d0b;
+  --card: #1c1a16;
+  --muted: #23201b;
+  --line: #332e27;
+  --line-strong: #4a4238;
+  --rule: #e9e2d6;
 
-  --fg: #e9ecf1;
-  --fg-muted: #9aa4b4;
-  --fg-subtle: #6a7484;
+  --fg: #f0e9dc;
+  --fg-muted: #b0a595;
+  --fg-subtle: #857a6c;
 
-  --accent: #5b91ff;
-  --accent-hover: #7aa6ff;
-  --accent-soft: rgba(91, 145, 255, 0.13);
-  --accent-ring: rgba(91, 145, 255, 0.28);
+  --accent: #6fb3c4;
+  --accent-hover: #8ec8d6;
+  --accent-soft: rgba(111, 179, 196, 0.14);
+  --accent-ring: rgba(111, 179, 196, 0.3);
 
-  --pos: #2fbe93;
-  --pos-soft: rgba(47, 190, 147, 0.13);
-  --neg: #f4667c;
-  --neg-soft: rgba(244, 102, 124, 0.13);
-  --warn: #e2a03f;
-  --warn-soft: rgba(226, 160, 63, 0.13);
+  --pos: #56b98a;
+  --pos-soft: rgba(86, 185, 138, 0.14);
+  --neg: #e0745b;
+  --neg-soft: rgba(224, 116, 91, 0.14);
+  --warn: #d9a24d;
+  --warn-soft: rgba(217, 162, 77, 0.14);
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-sm: none;
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.5);
 
-  --water-top: rgba(58, 96, 138, 0.16);
-  --water-bottom: rgba(30, 58, 92, 0.4);
-  --curve-top: rgba(47, 190, 147, 0.24);
-  --curve-bottom: rgba(47, 190, 147, 0.02);
-  --grid: #242935;
-  --plot-dot: #13161d;
+  --water-top: rgba(111, 179, 196, 0.06);
+  --water-bottom: rgba(111, 179, 196, 0.16);
+  --curve-top: rgba(86, 185, 138, 0.26);
+  --curve-bottom: rgba(86, 185, 138, 0.02);
+  --grid: #2c2821;
+  --plot-dot: #1c1a16;
 
-  --series-1: #4a5568;
-  --series-2: #59637a;
-  --series-3: #68738c;
-  --series-4: #78849e;
-  --series-5: #8994ad;
-  --series-6: #9aa5bd;
-  --on-series: rgba(255, 255, 255, 0.95);
+  --series-1: #6fb3c4;
+  --series-2: #5d9aaa;
+  --series-3: #4c8290;
+  --series-4: #3d6b77;
+  --series-5: #30555f;
+  --series-6: #254048;
+  --on-series: rgba(20, 18, 15, 0.92);
 }
 
 @theme inline {
@@ -123,6 +130,7 @@
   --color-warn-soft: var(--warn-soft);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-display-serif), ui-serif, Georgia, "Times New Roman", serif;
 
   --shadow-card: var(--shadow-sm);
   --shadow-float: var(--shadow-md);
@@ -148,11 +156,43 @@ body {
   font-feature-settings: "tnum" 1, "cv01" 1;
 }
 
-/* Big display figures: tight, confident, never wrapped mid-number. */
+/*
+  Display type. Instrument Serif is high-contrast and narrow, so it holds a
+  $24,000,000 at 64px without dominating the sentence around it. Optical sizing
+  wants slightly negative tracking at these sizes.
+*/
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.018em;
+  line-height: 1.04;
+}
+
+/* A figure set inline in a sentence, at the sentence's scale but louder. */
 .figure {
+  font-family: var(--font-display);
+  font-weight: 400;
   font-variant-numeric: tabular-nums lining-nums;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.015em;
+}
+
+/* Small all-caps label. Used sparingly, as a section marker. */
+.marker {
+  font-size: 12px;
   font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--fg-subtle);
+}
+
+/* The heavy rule that opens a section — an editorial device, not a border. */
+.hairrule {
+  height: 1px;
+  background: var(--line);
+}
+.thickrule {
+  height: 2px;
+  background: var(--rule);
 }
 
 /* ---- Range slider ------------------------------------------------- */

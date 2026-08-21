@@ -1,11 +1,20 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Instrument_Serif, Inter } from "next/font/google";
 import { ThemeProvider, themeBootScript } from "@/components/theme";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+  display: "swap",
+});
+
+// Narrow, high-contrast serif. Carries the big money figures.
+const displaySerif = Instrument_Serif({
+  variable: "--font-display-serif",
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -34,7 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       // The boot script rewrites data-theme before React hydrates, which is
       // exactly the kind of pre-hydration DOM edit this suppresses.
       suppressHydrationWarning
-      className={`${inter.variable} h-full antialiased`}
+      className={`${inter.variable} ${displaySerif.variable} h-full antialiased`}
     >
       <head>
         {/* Applies the stored theme before first paint, so returning dark-mode
