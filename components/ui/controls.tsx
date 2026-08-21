@@ -7,32 +7,55 @@ import { compact, parseMoney } from "@/lib/waterfall/format";
 /* Card chrome                                                         */
 /* ------------------------------------------------------------------ */
 
-export function Card({
-  title,
+/**
+ * A section of the page, opened by a marker and a rule. Deliberately not a box:
+ * boxing every region is what makes a page read as a dashboard.
+ */
+export function Section({
+  marker,
   aside,
   children,
   className = "",
-  bodyClassName = "p-5 sm:p-6",
 }: {
-  title?: string;
+  marker: string;
   aside?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
-  bodyClassName?: string;
 }) {
   return (
-    <section
-      className={`rounded-xl border border-line bg-card shadow-[var(--shadow-card)] ${className}`}
-    >
-      {title ? (
-        <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-b border-line px-5 py-4 sm:px-6">
-          <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-fg">
-            {title}
-          </h2>
-          {aside}
-        </header>
-      ) : null}
-      <div className={bodyClassName}>{children}</div>
+    <section className={className}>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <h2 className="marker">{marker}</h2>
+        {aside}
+      </div>
+      <div className="thickrule mt-3" />
+      <div className="mt-6">{children}</div>
+    </section>
+  );
+}
+
+/**
+ * A bordered panel. Reserved for the controls, which genuinely are a distinct
+ * surface you reach into rather than content you read.
+ */
+export function Panel({
+  title,
+  aside,
+  children,
+}: {
+  title: string;
+  aside?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="border border-line bg-card">
+      <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line px-5 py-3.5">
+        <h2 className="text-[14px] font-semibold tracking-[-0.01em] text-fg">
+          {title}
+        </h2>
+        {aside}
+      </header>
+      <div className="p-5">{children}</div>
     </section>
   );
 }
@@ -71,7 +94,7 @@ export function CardMeta({ children }: { children: React.ReactNode }) {
 /* ------------------------------------------------------------------ */
 
 const inputClass =
-  "w-full h-10 rounded-lg border border-line bg-card px-3 " +
+  "w-full h-10 rounded-[3px] border border-line bg-page px-3 " +
   "text-[15px] tnum text-fg placeholder:text-fg-subtle " +
   "hover:border-line-strong focus:border-accent focus:outline-none " +
   "focus:ring-4 focus:ring-[var(--accent-ring)] transition-[border-color,box-shadow]";
@@ -234,7 +257,7 @@ export function SegmentedControl<T extends string>({
     <div
       role="radiogroup"
       aria-label={ariaLabel}
-      className="flex gap-1 rounded-lg border border-line bg-muted p-1"
+      className="flex gap-1 rounded-[3px] border border-line bg-page p-1"
     >
       {options.map((opt) => {
         const active = opt.value === value;
@@ -246,9 +269,9 @@ export function SegmentedControl<T extends string>({
             aria-checked={active}
             title={opt.title}
             onClick={() => onChange(opt.value)}
-            className={`flex-1 rounded-[6px] px-3 py-1.5 text-[13px] font-medium transition-colors ${
+            className={`flex-1 rounded-[2px] px-3 py-1.5 text-[13px] font-medium transition-colors ${
               active
-                ? "bg-card text-fg shadow-[var(--shadow-card)]"
+                ? "bg-card text-fg ring-1 ring-line"
                 : "text-fg-muted hover:text-fg"
             }`}
           >
@@ -358,7 +381,7 @@ export function Button({
   className?: string;
 }) {
   const base =
-    "inline-flex h-9 items-center justify-center gap-1.5 rounded-lg px-3.5 " +
+    "inline-flex h-9 items-center justify-center gap-1.5 rounded-[3px] px-3.5 " +
     "text-[13.5px] font-medium whitespace-nowrap transition-colors " +
     "disabled:opacity-45 disabled:cursor-not-allowed";
 
@@ -366,6 +389,7 @@ export function Button({
     primary: "bg-accent text-white hover:bg-accent-hover",
     secondary:
       "border border-line bg-card text-fg hover:border-line-strong hover:bg-muted",
+
     quiet: "text-fg-muted hover:bg-muted hover:text-fg",
   }[variant];
 

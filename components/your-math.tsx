@@ -73,7 +73,7 @@ export function YourMath({
 
       {early ? (
         <div
-          className="mt-6 rounded-xl border p-5"
+          className="mt-6 border p-5"
           style={{
             borderColor: "color-mix(in srgb, var(--warn) 28%, transparent)",
             background: "var(--warn-soft)",

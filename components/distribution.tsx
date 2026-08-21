@@ -52,7 +52,7 @@ export function Distribution({
     <div className="space-y-6">
       {/* The whole exit, left to right, in payout order. */}
       <div>
-        <div className="flex h-12 w-full gap-0.5 overflow-hidden rounded-lg bg-muted">
+        <div className="flex h-14 w-full gap-0.5 overflow-hidden bg-muted">
           {segments.length === 0 ? (
             <div className="flex w-full items-center justify-center text-[13px] text-fg-subtle">
               Nothing to distribute
@@ -103,7 +103,7 @@ export function Distribution({
       </div>
 
       {/* The same thing as numbers. */}
-      <div className="-mx-5 overflow-x-auto px-5 sm:-mx-6 sm:px-6">
+      <div className="overflow-x-auto">
         <table className="w-full min-w-[460px] border-collapse">
           <thead>
             <tr className="border-b border-line">
@@ -206,7 +206,7 @@ function Swatch({ color }: { color: string }) {
   return (
     <span
       aria-hidden
-      className="inline-block h-2.5 w-2.5 shrink-0 rounded-sm"
+      className="inline-block h-2.5 w-2.5 shrink-0"
       style={{ background: color }}
     />
   );

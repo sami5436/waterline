@@ -4,7 +4,7 @@ import type { Grant, TaxAssumptions } from "@/lib/waterfall/types";
 import { percent, shares as fmtShares } from "@/lib/waterfall/format";
 import { vestedShares } from "@/lib/waterfall/engine";
 import {
-  Card,
+  Panel,
   CardMeta,
   DateInput,
   Field,
@@ -24,7 +24,7 @@ export function GrantEditor({
   const { vested, fraction, monthsElapsed } = vestedShares(grant);
 
   return (
-    <Card
+    <Panel
       title="Your grant"
       aside={<CardMeta>{fmtShares(vested)} vested</CardMeta>}
     >
@@ -104,7 +104,7 @@ export function GrantEditor({
           </Field>
         </div>
 
-        <div className="rounded-xl bg-muted px-4 py-3.5">
+        <div className="border border-line bg-page px-4 py-3.5">
           <div className="flex items-baseline justify-between gap-3">
             <span className="text-[13.5px] text-fg-muted">
               Vested at month {monthsElapsed}
@@ -142,7 +142,7 @@ export function GrantEditor({
           />
         </Field>
       </div>
-    </Card>
+    </Panel>
   );
 }
 
@@ -161,7 +161,7 @@ export function TaxEditor({
   const early = tax.strategy === "early-exercise";
 
   return (
-    <Card title="Exercise & tax">
+    <Panel title="Exercise & tax">
       <div className="space-y-5">
         <Field
           label="Strategy"
@@ -228,7 +228,7 @@ export function TaxEditor({
           </div>
         ) : null}
       </div>
-    </Card>
+    </Panel>
   );
 }
 

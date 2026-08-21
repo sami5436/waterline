@@ -15,9 +15,9 @@ import { CapTableEditor } from "./cap-table-editor";
 import { Distribution } from "./distribution";
 import { ExitChart } from "./exit-chart";
 import { GrantEditor, TaxEditor } from "./grant-editor";
+import { Lede } from "./lede";
 import { ThemeToggle } from "./theme";
-import { Card, CardMeta, NumberInput, Slider } from "./ui/controls";
-import { VerdictBand } from "./verdict-band";
+import { CardMeta, NumberInput, Section, Slider } from "./ui/controls";
 import { YourMath } from "./your-math";
 
 const SLIDER_STEPS = 1000;
@@ -75,73 +75,101 @@ export function WaterlineApp({
     <div className="min-h-full">
       <Masthead onPick={loadPreset} toolbar={toolbar?.(scenario)} />
 
-      <main className="mx-auto w-full max-w-[1360px] px-4 pb-20 pt-6 sm:px-6 sm:pt-8 lg:px-8">
-        <div className="space-y-4 sm:space-y-5">
-          <VerdictBand
-            scenario={scenario}
+      <main className="mx-auto w-full max-w-[1180px] px-5 pb-24 pt-10 sm:px-8 sm:pt-14">
+        <Lede
+          scenario={scenario}
+          verdict={verdict}
+          outcome={outcome}
+          exitValue={exitValue}
+        />
+
+        <Section
+          marker="The payout curve"
+          className="mt-16"
+          aside={<CardMeta>Drag the chart to move the exit price</CardMeta>}
+        >
+          <ExitChart
+            curve={curve}
             verdict={verdict}
-            outcome={outcome}
             exitValue={exitValue}
+            netAtExit={outcome.net}
+            onScrub={setExitValue}
           />
 
-          <Card
-            title="Payout curve"
-            aside={<CardMeta>Drag the chart or the slider</CardMeta>}
-          >
-            <ExitChart
-              curve={curve}
-              verdict={verdict}
-              exitValue={exitValue}
-              netAtExit={outcome.net}
-              onScrub={setExitValue}
-            />
-
-            <div className="mt-6 border-t border-line pt-5">
-              <div className="flex flex-wrap items-end justify-between gap-4">
-                <div>
-                  <div className="text-[13px] font-medium text-fg-subtle">
-                    Exit value
-                  </div>
-                  <div className="figure mt-1 text-[1.9rem] leading-none text-fg">
-                    {money(exitValue)}
-                  </div>
+          <div className="mt-7 border-t border-line pt-6">
+            <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+              <div>
+                <div className="marker">If it sells for</div>
+                <div className="figure mt-1.5 text-[2.2rem] leading-none text-fg">
+                  {money(exitValue)}
                 </div>
-                <label className="flex items-center gap-2.5">
-                  <span className="text-[13px] text-fg-subtle">Chart max</span>
-                  <div className="w-28">
-                    <NumberInput
-                      value={scenario.maxExit}
-                      onChange={setMaxExit}
-                      min={1_000_000}
-                      max={1e13}
-                      prefix="$"
-                      format="compact"
-                      ariaLabel="Maximum exit value on the chart"
-                    />
-                  </div>
-                </label>
               </div>
-
-              <div className="mt-4">
-                <Slider
-                  value={toSlider(exitValue, scenario.maxExit)}
-                  onChange={(pos) => setExitValue(fromSlider(pos, scenario.maxExit))}
-                  min={0}
-                  max={SLIDER_STEPS}
-                  step={1}
-                  ariaLabel="Exit value"
-                  ariaValueText={money(exitValue)}
-                />
-                <div className="mt-1 flex justify-between text-[12.5px] text-fg-subtle">
-                  <span>$0</span>
-                  <span>{money(scenario.maxExit)}</span>
+              <label className="flex items-center gap-2.5">
+                <span className="text-[13px] text-fg-subtle">Chart max</span>
+                <div className="w-28">
+                  <NumberInput
+                    value={scenario.maxExit}
+                    onChange={setMaxExit}
+                    min={1_000_000}
+                    max={1e13}
+                    prefix="$"
+                    format="compact"
+                    ariaLabel="Maximum exit value on the chart"
+                  />
                 </div>
+              </label>
+            </div>
+
+            <div className="mt-5">
+              <Slider
+                value={toSlider(exitValue, scenario.maxExit)}
+                onChange={(pos) => setExitValue(fromSlider(pos, scenario.maxExit))}
+                min={0}
+                max={SLIDER_STEPS}
+                step={1}
+                ariaLabel="Exit value"
+                ariaValueText={money(exitValue)}
+              />
+              <div className="mt-1.5 flex justify-between text-[12.5px] text-fg-subtle">
+                <span>$0</span>
+                <span>{money(scenario.maxExit)}</span>
               </div>
             </div>
-          </Card>
+          </div>
+        </Section>
 
-          <div className="grid gap-4 sm:gap-5 lg:grid-cols-[minmax(0,400px)_minmax(0,1fr)]">
-            <div className="space-y-4 sm:space-y-5">
+        {/* Findings lead; the controls you reach into sit alongside them. */}
+        <div className="mt-16 grid gap-14 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-12">
+          <div className="space-y-16">
+            <Section
+              marker={`Who gets paid at ${money(exitValue)}`}
+              aside={
+                <CardMeta>
+                  {money(waterfall.totalPreferencePaid)} paid as preference
+                </CardMeta>
+              }
+            >
+              <Distribution
+                waterfall={waterfall}
+                rounds={scenario.capTable.rounds}
+                outcome={outcome}
+                exitValue={exitValue}
+              />
+            </Section>
+
+            <Section marker="Your arithmetic">
+              <YourMath
+                outcome={outcome}
+                grant={scenario.grant}
+                tax={scenario.tax}
+              />
+            </Section>
+          </div>
+
+          <aside className="lg:sticky lg:top-6 lg:self-start">
+            <div className="marker">Assumptions</div>
+            <div className="thickrule mt-3" />
+            <div className="mt-6 space-y-4">
               <GrantEditor
                 grant={scenario.grant}
                 onChange={(grant) => setScenario((s) => ({ ...s, grant }))}
@@ -156,31 +184,7 @@ export function WaterlineApp({
                 onChange={(tax) => setScenario((s) => ({ ...s, tax }))}
               />
             </div>
-
-            <div className="space-y-4 sm:space-y-5 lg:order-first lg:col-start-2 lg:row-start-1">
-              <Card
-                title={`Who gets paid at a ${money(exitValue)} exit`}
-                aside={
-                  <CardMeta>{money(waterfall.totalPreferencePaid)} in preference</CardMeta>
-                }
-              >
-                <Distribution
-                  waterfall={waterfall}
-                  rounds={scenario.capTable.rounds}
-                  outcome={outcome}
-                  exitValue={exitValue}
-                />
-              </Card>
-
-              <Card title="Your arithmetic">
-                <YourMath
-                  outcome={outcome}
-                  grant={scenario.grant}
-                  tax={scenario.tax}
-                />
-              </Card>
-            </div>
-          </div>
+          </aside>
         </div>
 
         <Colophon />
@@ -199,89 +203,56 @@ function Masthead({
   toolbar?: React.ReactNode;
 }) {
   return (
-    <header className="border-b border-line bg-card">
-      <div className="mx-auto w-full max-w-[1360px] px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
-        {/* Wordmark and controls share the top row at every width; the
-            description flows beneath at full measure. */}
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <WaveMark />
-            <span className="text-[19px] font-semibold tracking-[-0.02em] text-fg">
-              Waterline
+    <header className="border-b border-line">
+      <div className="mx-auto flex w-full max-w-[1180px] flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-4 sm:px-8">
+        <div className="flex items-baseline gap-3">
+          <span className="display text-[22px] text-fg">Waterline</span>
+          <span className="hidden text-[13px] text-fg-subtle sm:inline">
+            what startup equity is actually worth
+          </span>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <nav className="flex flex-wrap items-center gap-x-4 gap-y-1">
+            <span className="hidden text-[13px] text-fg-subtle md:inline">
+              Examples
             </span>
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
+            {presets.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => onPick(p.id)}
+                title={p.blurb}
+                className="border-b border-transparent pb-0.5 text-[13px] text-fg-muted transition-colors hover:border-fg hover:text-fg"
+              >
+                {p.label}
+              </button>
+            ))}
+          </nav>
+          <span className="hidden h-5 w-px bg-line sm:block" aria-hidden />
+          <div className="flex items-center gap-2">
             {toolbar}
             <ThemeToggle />
           </div>
-        </div>
-
-        <h1 className="mt-3.5 max-w-2xl text-[15px] leading-relaxed text-fg-muted">
-          Your offer letter quotes a number. Liquidation preferences,
-          participation rights and dilution decide the real one. Waterline runs
-          the full exit waterfall and finds the price below which your common
-          stock pays you{" "}
-          <span className="font-medium" style={{ color: "var(--neg)" }}>
-            nothing at all
-          </span>
-          .
-        </h1>
-
-        <div className="mt-5 flex flex-wrap items-center gap-2">
-          <span className="mr-1 text-[13px] text-fg-subtle">Start from</span>
-          {presets.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => onPick(p.id)}
-              title={p.blurb}
-              className="rounded-full border border-line bg-card px-3.5 py-1.5 text-[13px] font-medium text-fg-muted transition-colors hover:border-accent hover:bg-accent-soft hover:text-accent"
-            >
-              {p.label}
-            </button>
-          ))}
         </div>
       </div>
     </header>
   );
 }
 
-function WaveMark() {
-  return (
-    <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden>
-      <rect width="32" height="32" rx="8" style={{ fill: "var(--accent)" }} />
-      <path
-        d="M6 12.5c3-3.5 6-3.5 9 0s6 3.5 9 0"
-        fill="none"
-        stroke="#fff"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M16 17v9"
-        stroke="#fff"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-        strokeDasharray="2.5 3"
-        opacity="0.75"
-      />
-    </svg>
-  );
-}
-
 function Colophon() {
   return (
-    <footer className="mt-10 border-t border-line pt-6 text-[13px] leading-relaxed text-fg-subtle">
-      <p className="max-w-3xl">
+    <footer className="mt-20 border-t border-line pt-7 text-[13px] leading-relaxed text-fg-subtle">
+      <p className="max-w-[68ch]">
         Waterline is a modelling tool, not financial, legal or tax advice. It
         works from the numbers you enter — and the ones that matter (preference
-        multiples, participation, seniority, share counts) usually live in the
-        charter and the stock purchase agreement rather than the offer letter, so
-        ask for them. Nothing you type is uploaded unless you press Share.
+        multiples, participation, seniority, share counts) live in the charter
+        and the stock purchase agreement, not the offer letter. Ask for them.
+        Nothing you type leaves your browser unless you press Share.
       </p>
       <p className="mt-3">
         <a
-          className="underline decoration-line underline-offset-2 transition-colors hover:text-accent"
+          className="border-b border-line pb-0.5 transition-colors hover:border-fg hover:text-fg"
           href="https://github.com/sami5436/waterline"
           target="_blank"
           rel="noreferrer"

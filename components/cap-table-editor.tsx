@@ -10,7 +10,7 @@ import {
 import { fullyDilutedShares, preferenceOverhang } from "@/lib/waterfall/engine";
 import {
   Button,
-  Card,
+  Panel,
   CardMeta,
   Field,
   NumberInput,
@@ -61,7 +61,7 @@ export function CapTableEditor({
     patch({ rounds: capTable.rounds.filter((r) => r.id !== id) });
 
   return (
-    <Card
+    <Panel
       title="The cap table"
       aside={<CardMeta>{fmtShares(fd)} fully diluted</CardMeta>}
     >
@@ -108,7 +108,7 @@ export function CapTableEditor({
 
           <div className="space-y-4">
             {capTable.rounds.length === 0 ? (
-              <p className="rounded-lg bg-muted px-4 py-5 text-center text-[13.5px] text-fg-muted">
+              <p className="border border-line bg-page px-4 py-5 text-center text-[13.5px] text-fg-muted">
                 No preferred stock. Every share splits the exit evenly.
               </p>
             ) : (
@@ -126,7 +126,7 @@ export function CapTableEditor({
           </div>
         </div>
       </div>
-    </Card>
+    </Panel>
   );
 }
 
@@ -149,7 +149,7 @@ function RoundCard({
   const ownership = fullyDiluted > 0 ? round.shares / fullyDiluted : 0;
 
   return (
-    <div className="rounded-xl border border-line bg-muted p-4">
+    <div className="border border-line bg-page p-4">
       <div className="mb-4 flex items-center gap-2">
         <TextInput
           value={round.name}
@@ -162,7 +162,7 @@ function RoundCard({
           onClick={onRemove}
           aria-label={`Remove ${round.name}`}
           title={`Remove ${round.name}`}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-fg-subtle transition-colors hover:bg-card hover:text-[color:var(--neg)]"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[3px] text-fg-subtle transition-colors hover:bg-card hover:text-[color:var(--neg)]"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
             <path
