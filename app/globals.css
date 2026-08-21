@@ -1,26 +1,273 @@
 @import "tailwindcss";
 
+/*
+  Waterline is set like a printed feature, not a dashboard: warm paper, a
+  brown-black ink, a high-contrast serif for the numbers that matter, and rules
+  instead of boxes wherever a box is not load-bearing. Deep sea blue carries the
+  "water" idea; green, red and ochre are reserved strictly for what the numbers
+  mean.
+
+  Every colour is a CSS variable mapped into Tailwind via `@theme inline`, so
+  flipping `data-theme` on <html> re-themes everything — including the SVG
+  chart, which references the same variables through inline styles.
+*/
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+
+  /* Warm paper, not grey chrome. Ink is brown-black, never pure #000. */
+  --page: #f7f2e9;
+  --page-deep: #efe7d9;
+  --card: #fffdf9;
+  --muted: #f2ebdf;
+  --line: #ded3c0;
+  --line-strong: #c3b49b;
+  --rule: #1c1714;
+
+  --fg: #1c1714;
+  --fg-muted: #5d5147;
+  --fg-subtle: #8c7d6d;
+
+  /* Deep sea. The water in "waterline". */
+  --accent: #0e4b5c;
+  --accent-hover: #0a3745;
+  --accent-soft: #e2eef1;
+  --accent-ring: rgba(14, 75, 92, 0.2);
+
+  --pos: #1a6b46;
+  --pos-soft: #e6f1ea;
+  --neg: #b23a25;
+  --neg-soft: #fbeae5;
+  --warn: #9a6712;
+  --warn-soft: #f9f0dd;
+
+  --shadow-sm: none;
+  --shadow-md: 0 12px 32px rgba(28, 23, 20, 0.09);
+
+  /* Chart. */
+  --water-top: rgba(38, 118, 152, 0.1);
+  --water-bottom: rgba(12, 68, 100, 0.3);
+  --curve-top: rgba(26, 107, 70, 0.24);
+  --curve-bottom: rgba(26, 107, 70, 0.02);
+  --grid: #e3d9c8;
+  --plot-dot: #fffdf9;
+
+  --series-1: #0e4b5c;
+  --series-2: #2c6675;
+  --series-3: #4a818e;
+  --series-4: #6a9ca6;
+  --series-5: #8db6be;
+  --series-6: #b1d0d5;
+  --on-series: rgba(255, 253, 249, 0.96);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --page: #14120f;
+  --page-deep: #0e0d0b;
+  --card: #1c1a16;
+  --muted: #23201b;
+  --line: #332e27;
+  --line-strong: #4a4238;
+  --rule: #e9e2d6;
+
+  --fg: #f0e9dc;
+  --fg-muted: #b0a595;
+  --fg-subtle: #857a6c;
+
+  --accent: #6fb3c4;
+  --accent-hover: #8ec8d6;
+  --accent-soft: rgba(111, 179, 196, 0.14);
+  --accent-ring: rgba(111, 179, 196, 0.3);
+
+  --pos: #56b98a;
+  --pos-soft: rgba(86, 185, 138, 0.14);
+  --neg: #e0745b;
+  --neg-soft: rgba(224, 116, 91, 0.14);
+  --warn: #d9a24d;
+  --warn-soft: rgba(217, 162, 77, 0.14);
+
+  --shadow-sm: none;
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.5);
+
+  --water-top: rgba(111, 179, 196, 0.07);
+  --water-bottom: rgba(76, 146, 178, 0.26);
+  --curve-top: rgba(86, 185, 138, 0.26);
+  --curve-bottom: rgba(86, 185, 138, 0.02);
+  --grid: #2c2821;
+  --plot-dot: #1c1a16;
+
+  --series-1: #6fb3c4;
+  --series-2: #5d9aaa;
+  --series-3: #4c8290;
+  --series-4: #3d6b77;
+  --series-5: #30555f;
+  --series-6: #254048;
+  --on-series: rgba(20, 18, 15, 0.92);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-page: var(--page);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-pos: var(--pos);
+  --color-pos-soft: var(--pos-soft);
+  --color-neg: var(--neg);
+  --color-neg-soft: var(--neg-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-display-serif), ui-serif, Georgia, "Times New Roman", serif;
+
+  --shadow-card: var(--shadow-sm);
+  --shadow-float: var(--shadow-md);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--page);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--page);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Figures must not jitter as values change under a slider. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "cv01" 1;
+}
+
+/*
+  Display type. Instrument Serif is high-contrast and narrow, so it holds a
+  $24,000,000 at 64px without dominating the sentence around it. Optical sizing
+  wants slightly negative tracking at these sizes.
+*/
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.018em;
+  line-height: 1.04;
+}
+
+/* A figure set inline in a sentence, at the sentence's scale but louder. */
+.figure {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.015em;
+}
+
+/* Small all-caps label. Used sparingly, as a section marker. */
+.marker {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--fg-subtle);
+}
+
+/* The heavy rule that opens a section — an editorial device, not a border. */
+.hairrule {
+  height: 1px;
+  background: var(--line);
+}
+.thickrule {
+  height: 2px;
+  background: var(--rule);
+}
+
+/* ---- Range slider ------------------------------------------------- */
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  height: 24px;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--muted);
+  border: 1px solid var(--line);
+}
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--muted);
+  border: 1px solid var(--line);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -8px;
+  border-radius: 999px;
+  background: var(--card);
+  border: 2px solid var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--card);
+  border: 2px solid var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px var(--accent-ring);
+}
+input[type="range"]:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 4px var(--accent-ring);
+}
+
+/* Money fields, not steppers. */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+::selection {
+  background: var(--accent-ring);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

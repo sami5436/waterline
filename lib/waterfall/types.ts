@@ -172,3 +172,12 @@ export interface Verdict {
   /** Post-money valuation implied by the most recent round. */
   lastPostMoney: number;
 }
+
+/** One sample of the payout curve. */
+export interface CurvePoint {
+  exit: number;
+  net: number;
+  gross: number;
+  pricePerShare: number;
+  commonPool: number;
+}

@@ -19,12 +19,27 @@ export function dollars(value: number, fractionDigits = 0): string {
   });
 }
 
-/** Per-share prices need more precision than headline dollars. */
+/**
+ * Per-share prices need more precision than headline dollars, but only where
+ * it carries information: $0.90 stays $0.90, while fractions of a cent keep
+ * enough digits to stay distinguishable from zero.
+ */
 export function pricePerShare(value: number): string {
-  if (value === 0) return "$0.00";
-  if (Math.abs(value) < 0.01) return `$${value.toFixed(4)}`;
-  if (Math.abs(value) < 1) return `$${value.toFixed(3)}`;
-  return `$${value.toFixed(2)}`;
+  const n = Math.abs(value);
+  if (n === 0) return "$0.00";
+  if (n >= 0.1) return `$${value.toFixed(2)}`;
+  if (n >= 0.001) return `$${value.toFixed(4)}`;
+  return `$${value.toPrecision(2)}`;
+}
+
+/** Compact magnitude without a currency symbol: 300M, 1.2B, 45K. */
+export function compact(value: number): string {
+  const n = Math.abs(value);
+  const sign = value < 0 ? "-" : "";
+  if (n < 1000) return `${sign}${trim(n)}`;
+  if (n < 1_000_000) return `${sign}${trim(n / 1000)}K`;
+  if (n < 1_000_000_000) return `${sign}${trim(n / 1_000_000)}M`;
+  return `${sign}${trim(n / 1_000_000_000)}B`;
 }
 
 export function shares(value: number): string {
