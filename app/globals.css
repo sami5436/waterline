@@ -252,6 +252,25 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+/*
+  Tailwind v4 no longer sets this in preflight, so every button loses the
+  pointer unless we put it back.
+*/
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+[role="radio"],
+[role="switch"],
+summary,
+label:has(> input[type="checkbox"]),
+label:has(> input[type="radio"]) {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 ::selection {
   background: var(--accent-ring);
 }
