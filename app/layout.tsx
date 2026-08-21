@@ -22,15 +22,35 @@ const title = "Waterline — what your startup equity is actually worth";
 const description =
   "Your offer letter quotes a number. Liquidation preferences, participation rights and dilution decide the real one. Waterline models the full exit waterfall and finds the exit price below which your common stock pays you nothing.";
 
+/**
+ * Absolute base for og:image and og:url. iMessage, Slack and friends all
+ * require absolute URLs, and relative ones only become absolute if this is set.
+ */
+const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "http://localhost:3000";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title,
   description,
   applicationName: "Waterline",
+  keywords: [
+    "startup equity",
+    "stock options",
+    "liquidation preference",
+    "cap table",
+    "exit waterfall",
+    "ISO",
+    "RSU",
+  ],
   openGraph: {
     title,
     description,
     type: "website",
     siteName: "Waterline",
+    locale: "en_US",
+    url: "/",
   },
   twitter: { card: "summary_large_image", title, description },
 };

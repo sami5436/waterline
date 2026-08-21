@@ -12,13 +12,24 @@ export async function generateMetadata({ params }: PageProps<"/s/[slug]">) {
   const scenario = await loadScenario(slug);
   if (!scenario) return { title: "Scenario not found — Waterline" };
 
+  const title = `${scenario.capTable.companyName} — Waterline`;
+  const description = `What ${scenario.grant.shares.toLocaleString(
+    "en-US",
+  )} options at ${scenario.capTable.companyName} are actually worth, after liquidation preferences.`;
+
   return {
-    title: `${scenario.capTable.companyName} — Waterline`,
-    description: `What ${scenario.grant.shares.toLocaleString(
-      "en-US",
-    )} options at ${scenario.capTable.companyName} are actually worth, after liquidation preferences.`,
+    title,
+    description,
     // A shared cap table is nobody else's business to index.
     robots: { index: false, follow: false },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      siteName: "Waterline",
+      url: `/s/${slug}`,
+    },
+    twitter: { card: "summary_large_image", title, description },
   };
 }
 
