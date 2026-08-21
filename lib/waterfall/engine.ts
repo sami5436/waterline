@@ -1,5 +1,6 @@
 import type {
   CapTable,
+  CurvePoint,
   EmployeeOutcome,
   Grant,
   Round,
@@ -503,14 +504,6 @@ export function computeVerdict(scenario: Scenario): Verdict {
 /* ------------------------------------------------------------------ */
 /* Curve sampling for the chart                                        */
 /* ------------------------------------------------------------------ */
-
-export interface CurvePoint {
-  exit: number;
-  net: number;
-  gross: number;
-  pricePerShare: number;
-  commonPool: number;
-}
 
 /**
  * Samples the payout curve across [0, maxExit]. Threshold values are injected

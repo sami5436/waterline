@@ -10,7 +10,21 @@ export interface Preset {
   scenario: Scenario;
 }
 
+/**
+ * Presets carry a fixed date so the module stays deterministic; `withToday`
+ * stamps the real one. Server-rendered pages resolve it once and pass it down
+ * as a prop, which keeps hydration in agreement about what "today" means.
+ */
 const today = "2026-01-01";
+
+export function todayISO(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+/** Returns a copy of the scenario with vesting evaluated as of `asOf`. */
+export function withAsOf(scenario: Scenario, asOf: string): Scenario {
+  return { ...scenario, grant: { ...scenario.grant, asOf } };
+}
 
 /**
  * Three cap tables that produce very different answers from very similar
@@ -213,5 +227,5 @@ export const defaultScenario: Scenario = presets[0].scenario;
 
 export function clonePreset(id: string): Scenario {
   const preset = presets.find((p) => p.id === id) ?? presets[0];
-  return structuredClone(preset.scenario);
+  return withAsOf(structuredClone(preset.scenario), todayISO());
 }

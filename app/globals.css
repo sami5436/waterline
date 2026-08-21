@@ -1,26 +1,233 @@
 @import "tailwindcss";
 
+/*
+  Design system: white cards on a light grey page, generous spacing, one blue
+  accent for interface chrome, and green/red/amber reserved strictly for what
+  the numbers mean. Nothing smaller than 12px.
+
+  Every colour is a CSS variable mapped into Tailwind via `@theme inline`, so
+  flipping `data-theme` on <html> re-themes everything — including the SVG
+  chart, which references the same variables through inline styles.
+*/
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+
+  --page: #f6f7f9;
+  --card: #ffffff;
+  --muted: #f4f5f7;
+  --line: #e6e8ec;
+  --line-strong: #d3d7dd;
+
+  --fg: #111826;
+  --fg-muted: #56606f;
+  --fg-subtle: #8b95a3;
+
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-soft: #eef4ff;
+  --accent-ring: rgba(37, 99, 235, 0.16);
+
+  --pos: #047d5f;
+  --pos-soft: #e9f7f2;
+  --neg: #d02b3f;
+  --neg-soft: #fdeef0;
+  --warn: #b45309;
+  --warn-soft: #fdf5e9;
+
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.04), 0 1px 3px rgba(16, 24, 40, 0.06);
+  --shadow-md: 0 2px 4px rgba(16, 24, 40, 0.04), 0 8px 20px rgba(16, 24, 40, 0.07);
+
+  /* Chart. */
+  --water-top: rgba(125, 165, 200, 0.1);
+  --water-bottom: rgba(96, 137, 175, 0.22);
+  --curve-top: rgba(4, 125, 95, 0.2);
+  --curve-bottom: rgba(4, 125, 95, 0.015);
+  --grid: #e6e8ec;
+  --plot-dot: #ffffff;
+
+  /* Distribution bar: preferred recedes, common and you come forward. */
+  --series-1: #64748b;
+  --series-2: #7c8798;
+  --series-3: #94a1b2;
+  --series-4: #aab6c6;
+  --series-5: #c0cad7;
+  --series-6: #d5dce6;
+  --on-series: rgba(255, 255, 255, 0.95);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --page: #0a0c11;
+  --card: #13161d;
+  --muted: #1a1e27;
+  --line: #242935;
+  --line-strong: #333a49;
+
+  --fg: #e9ecf1;
+  --fg-muted: #9aa4b4;
+  --fg-subtle: #6a7484;
+
+  --accent: #5b91ff;
+  --accent-hover: #7aa6ff;
+  --accent-soft: rgba(91, 145, 255, 0.13);
+  --accent-ring: rgba(91, 145, 255, 0.28);
+
+  --pos: #2fbe93;
+  --pos-soft: rgba(47, 190, 147, 0.13);
+  --neg: #f4667c;
+  --neg-soft: rgba(244, 102, 124, 0.13);
+  --warn: #e2a03f;
+  --warn-soft: rgba(226, 160, 63, 0.13);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+
+  --water-top: rgba(58, 96, 138, 0.16);
+  --water-bottom: rgba(30, 58, 92, 0.4);
+  --curve-top: rgba(47, 190, 147, 0.24);
+  --curve-bottom: rgba(47, 190, 147, 0.02);
+  --grid: #242935;
+  --plot-dot: #13161d;
+
+  --series-1: #4a5568;
+  --series-2: #59637a;
+  --series-3: #68738c;
+  --series-4: #78849e;
+  --series-5: #8994ad;
+  --series-6: #9aa5bd;
+  --on-series: rgba(255, 255, 255, 0.95);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-page: var(--page);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-pos: var(--pos);
+  --color-pos-soft: var(--pos-soft);
+  --color-neg: var(--neg);
+  --color-neg-soft: var(--neg-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --shadow-card: var(--shadow-sm);
+  --shadow-float: var(--shadow-md);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--page);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--page);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Figures must not jitter as values change under a slider. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1, "cv01" 1;
+}
+
+/* Big display figures: tight, confident, never wrapped mid-number. */
+.figure {
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+
+/* ---- Range slider ------------------------------------------------- */
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  height: 24px;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--muted);
+  border: 1px solid var(--line);
+}
+input[type="range"]::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--muted);
+  border: 1px solid var(--line);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: -8px;
+  border-radius: 999px;
+  background: var(--card);
+  border: 2px solid var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--card);
+  border: 2px solid var(--accent);
+  box-shadow: var(--shadow-sm);
+}
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px var(--accent-ring);
+}
+input[type="range"]:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 4px var(--accent-ring);
+}
+
+/* Money fields, not steppers. */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+::selection {
+  background: var(--accent-ring);
+}
+
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
