@@ -1,4 +1,4 @@
-import { defaultScenario } from "./presets";
+import { defaultScenario } from "./presets.ts";
 import type {
   CapTable,
   ExerciseStrategy,
