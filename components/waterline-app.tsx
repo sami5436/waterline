@@ -10,12 +10,14 @@ import {
 import { clonePreset, presets } from "@/lib/waterfall/presets";
 import { money } from "@/lib/waterfall/format";
 import type { Scenario } from "@/lib/waterfall/types";
+import type { SaveResult } from "@/lib/scenarios";
 
 import { CapTableEditor } from "./cap-table-editor";
 import { Distribution } from "./distribution";
 import { ExitChart } from "./exit-chart";
 import { GrantEditor, TaxEditor } from "./grant-editor";
 import { Lede } from "./lede";
+import { ShareButton } from "./share-button";
 import { ThemeToggle } from "./theme";
 import { CardMeta, NumberInput, Section, Slider } from "./ui/controls";
 import { YourMath } from "./your-math";
@@ -29,11 +31,15 @@ const fromSlider = (pos: number, max: number) => (pos / SLIDER_STEPS) ** 2 * max
 
 export function WaterlineApp({
   initialScenario,
-  toolbar,
+  saveAction,
 }: {
   initialScenario: Scenario;
-  /** Slot for the share controls, which need server access. */
-  toolbar?: (scenario: Scenario) => React.ReactNode;
+  /**
+   * Server action that persists a scenario and returns its slug. Omitted when
+   * no database is configured, in which case sharing is simply absent and
+   * everything else still works.
+   */
+  saveAction?: (scenario: Scenario) => Promise<SaveResult>;
 }) {
   const [scenario, setScenario] = useState<Scenario>(initialScenario);
   const [exitValue, setExitValue] = useState(() => openingExit(initialScenario));
@@ -73,7 +79,12 @@ export function WaterlineApp({
 
   return (
     <div className="min-h-full">
-      <Masthead onPick={loadPreset} toolbar={toolbar?.(scenario)} />
+      <Masthead
+        onPick={loadPreset}
+        toolbar={
+          saveAction ? <ShareButton scenario={scenario} save={saveAction} /> : null
+        }
+      />
 
       <main className="mx-auto w-full max-w-[1180px] px-5 pb-24 pt-10 sm:px-8 sm:pt-14">
         <Lede
