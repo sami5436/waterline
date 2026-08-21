@@ -31,6 +31,7 @@ export default async function SharedScenario({ params }: PageProps<"/s/[slug]">)
     <WaterlineApp
       initialScenario={scenario}
       saveAction={isDatabaseConfigured() ? shareScenario : undefined}
+      startsDetailed
     />
   );
 }
