@@ -2,6 +2,8 @@
 
 **What your startup equity is actually worth.**
 
+**[waterline-azure.vercel.app](https://waterline-azure.vercel.app)**
+
 Your offer letter quotes a number: shares × the last round's price per share. That number is almost always wrong, and usually wrong in one direction.
 
 Liquidation preferences mean investors are paid first — often a multiple of what they put in, sometimes with the right to take their preference *and* their pro-rata share of what's left. Until that stack is paid, common stock receives nothing. So there is an exit price below which your options are worth exactly zero, and it is frequently far above the valuation the company quotes.
@@ -35,6 +37,12 @@ The ones that decide the answer are not in your offer letter. They're in the cer
 
 Ask for them. A company that won't share its preference structure with an employee holding options has told you something.
 
+## Two views
+
+It opens as a **simple calculator**: five numbers you can actually find — options and strike from your offer letter, valuation and total raised from a news story, and a share count — and one answer back. That view assumes the standard deal (a 1x non-participating preference) and full vesting.
+
+The **full model** is behind one link. It takes each round separately, with its own preference multiple, participation rights, cap and seniority tier, plus your real vesting schedule and tax treatment. That is where you go once you've asked for the actual terms — and where the number usually gets worse.
+
 ## Running it
 
 ```bash
@@ -66,7 +74,9 @@ CREATE TABLE scenarios (
 CREATE INDEX scenarios_created_at_idx ON scenarios (created_at DESC);
 ```
 
-Scenarios are stored only when Share is pressed. Shared pages are `noindex, nofollow`.
+Scenarios are stored only when Share is pressed. Shared pages are `noindex, nofollow` and open on the full model.
+
+Without `DATABASE_URL` the Share button is not rendered and `/s/<slug>` returns 404 — nothing else changes.
 
 ## Layout
 
