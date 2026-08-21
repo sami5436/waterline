@@ -123,7 +123,6 @@ export function WaterlineApp({
   return (
     <div className="min-h-full">
       <Masthead
-        onPick={loadPreset}
         toolbar={
           saveAction ? <ShareButton scenario={scenario} save={saveAction} /> : null
         }
@@ -263,6 +262,8 @@ export function WaterlineApp({
           />
         )}
 
+        <Examples onPick={loadPreset} />
+
         <Colophon />
       </main>
     </div>
@@ -271,13 +272,7 @@ export function WaterlineApp({
 
 /* ------------------------------------------------------------------ */
 
-function Masthead({
-  onPick,
-  toolbar,
-}: {
-  onPick: (id: string) => void;
-  toolbar?: React.ReactNode;
-}) {
+function Masthead({ toolbar }: { toolbar?: React.ReactNode }) {
   return (
     <header className="border-b border-line">
       <div className="mx-auto flex w-full max-w-[1180px] flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-4 sm:px-8">
@@ -288,29 +283,51 @@ function Masthead({
           </span>
         </div>
 
-        <div className="flex items-center gap-4">
-          <nav className="hidden flex-wrap items-center gap-x-3 gap-y-1 sm:flex">
-            <span className="text-[12px] text-fg-subtle">Examples</span>
-            {presets.map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => onPick(p.id)}
-                title={p.blurb}
-                className="border-b border-transparent pb-px text-[12px] text-fg-subtle transition-colors hover:border-fg-muted hover:text-fg-muted"
-              >
-                {p.label}
-              </button>
-            ))}
-          </nav>
-          <span className="hidden h-5 w-px bg-line sm:block" aria-hidden />
-          <div className="flex items-center gap-2">
-            {toolbar}
-            <ThemeToggle />
-          </div>
+        <div className="flex items-center gap-2">
+          {toolbar}
+          <ThemeToggle />
         </div>
       </div>
     </header>
+  );
+}
+
+/**
+ * Three cap tables that produce very different answers from similar headline
+ * numbers. Given room to say what each one demonstrates, rather than reduced
+ * to unexplained links in a navbar.
+ */
+function Examples({ onPick }: { onPick: (id: string) => void }) {
+  return (
+    <section className="mt-20">
+      <div className="marker">Examples</div>
+      <div className="thickrule mt-3" />
+      <p className="mt-5 max-w-[62ch] text-[14px] leading-relaxed text-fg-muted">
+        Three real-world deal structures. Same kind of headline valuation, very
+        different answers. Each one opens in the full model.
+      </p>
+
+      <div className="mt-7 grid gap-5 sm:grid-cols-3 sm:gap-7">
+        {presets.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            onClick={() => onPick(p.id)}
+            className="group border-t border-line pt-4 text-left transition-colors hover:border-fg"
+          >
+            <span className="block text-[15px] font-medium text-fg">
+              {p.label}
+            </span>
+            <span className="mt-2 block text-[13px] leading-relaxed text-fg-subtle">
+              {p.blurb}
+            </span>
+            <span className="mt-3 inline-block text-[13px] text-fg-muted transition-colors group-hover:text-fg">
+              Open this one &rarr;
+            </span>
+          </button>
+        ))}
+      </div>
+    </section>
   );
 }
 
